@@ -4,9 +4,9 @@ import pickle
 
 options=Options()
 driver=webdriver.Chrome(options=options)
-driver.get("https://finance.yahoo.com/quote/RELIANCE.NS/history/")
+driver.get("https://github.com/Programmer-s-Picnic/Web-Data-Analyzer/blob/main/maggie.txt")
 data=driver.page_source
-datafile=open("Reliance.txt","wb+")
+datafile=open("piyush.txt","wb+")
 pickle.dump(data,datafile)
 datafile.flush()
 datafile.close()
