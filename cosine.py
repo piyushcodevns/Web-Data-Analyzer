@@ -1,78 +1,73 @@
-import re, math
+import re
+import math
 from collections import Counter
 
+# ---------- Tokenizer ----------
 def tokenize(text: str):
     """
-    Token = a cleaned word.
-    We keep letters+numbers. (Simple tokenizer)
+    Token = cleaned word
+    Keeps English letters, numbers, and Devanagari
     """
     text = text.lower()
-    text = re.sub(r"[^a-z0-9\\s\\u0900-\\u097F]", " ", text)  # keep English + Devanagari
-    tokens = [t for t in text.split() if t]
-    return tokens
+    text = re.sub(r"[^a-z0-9\s\u0900-\u097F]", " ", text)
+    return [t for t in text.split() if t]
 
+# ---------- Vocabulary ----------
 def make_vocab(tokens1, tokens2):
-    "Vocabulary = sorted unique tokens across both sentences."
     return sorted(set(tokens1) | set(tokens2))
 
+# ---------- Vectorization ----------
 def vectorize(tokens, vocab):
-    """
-    Count Vector:
-    For each word in vocab, store its count in the sentence.
-    """
-    c = Counter(tokens)
-    return [c[w] for w in vocab]
+    counts = Counter(tokens)
+    return [counts[w] for w in vocab]
 
+# ---------- Math helpers ----------
 def dot(a, b):
-    return sum(x*y for x, y in zip(a, b))
+    return sum(x * y for x, y in zip(a, b))
 
 def magnitude(v):
-    return math.sqrt(sum(x*x for x in v))
+    return math.sqrt(sum(x * x for x in v))
 
 def cosine_similarity(a, b):
-    denom = (magnitude(a) * magnitude(b))
-    if denom == 0:
-        return 0.0
-    return dot(a, b) / denom
+    denom = magnitude(a) * magnitude(b)
+    return 0.0 if denom == 0 else dot(a, b) / denom
 
-S1="""I  am good
-I am not good
-I am happy
-I am not happy
-I am kind
-I am not kind
-I am fine
-I am not fine"""
-S2="I am not good"
-t1 = tokenize(S1)
-t2 = tokenize(S2)
-vocab = make_vocab(t1, t2)
-A = vectorize(t1, vocab)
-B = vectorize(t2, vocab)
-score = cosine_similarity(A, B)
 
-label = ("✅ Very similar" if score > 0.8 else
-         "🙂 Moderately similar" if score > 0.5 else
-         "😕 Not similar")
+# ---------- Input ----------
+S1 = """मैं ठीक हूँ
+मैं ठीक नहीं हूँ
+मैं खुश हूँ
+मैं खुश नहीं हूँ
+मैं दयालु हूँ
+मैं दयालु नहीं हूँ
+मैं ठीक हूँ
+मैं ठीक नहीं हूँ"""
 
-report = []
-report.append("STEP 1) Tokens")
-report.append(f"  S1 tokens: {t1}")
-report.append(f"  S2 tokens: {t2}\\n")
+S2 = "मैं दयालु नहीं हूँ"
 
-report.append("STEP 2) Vocabulary (unique words)")
-report.append(f"  V = {vocab}\\n")
 
-report.append("STEP 3) Count vectors (aligned to V)")
-report.append(f"  A = {A}")
-report.append(f"  B = {B}\\n")
+# ---------- Sentence-level comparison ----------
+sentences = S1.strip().split("\n")
+target_tokens = tokenize(S2)
 
-report.append("STEP 4) Dot product and magnitudes")
-report.append(f"  A·B = {dot(A,B)}")
-report.append(f"  ||A|| = {magnitude(A):.4f}")
-report.append(f"  ||B|| = {magnitude(B):.4f}\\n")
+print("TARGET SENTENCE:", S2)
+print("-" * 50)
 
-report.append("STEP 5) Cosine Similarity")
-report.append(f"  score = {score:.4f}  {label}")
+for i, sent in enumerate(sentences, 1):
+    tokens1 = tokenize(sent)
+    vocab = make_vocab(tokens1, target_tokens)
 
-print(report)
+    A = vectorize(tokens1, vocab)
+    B = vectorize(target_tokens, vocab)
+
+    score = cosine_similarity(A, B)
+
+    label = (
+        "✅ Very similar" if score > 0.8 else
+        "🙂 Moderately similar" if score > 0.5 else
+        "😕 Not similar"
+    )
+
+    print(f"Sentence {i}: {sent}")
+    print(f"  Cosine Similarity = {score:.4f}  {label}")
+    print()
