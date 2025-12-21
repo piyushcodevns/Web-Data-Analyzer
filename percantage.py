@@ -73,7 +73,7 @@ print(round(score,4))
 score=int((10000*score))/100
 print(score)
 score=score/100
-print(f"{S1},{S2},{score}%")
+print(f"{S1},{S2},{score}%") 
 print("_DATA_"+json.dumps({"A":A,"B":B,"score":score}))
 buffer.seek(0)
 output = buffer.read()
