@@ -4,9 +4,9 @@ import pickle
 
 options=Options()
 driver=webdriver.Chrome(options=options)
-driver.get("https://github.com/Programmer-s-Picnic/Web-Data-Analyzer/blob/main/maggie.txt")
+driver.get("https://ashutosh12mar.github.io/Ashutosh/ashu.html")
 data=driver.page_source
-datafile=open("piyush.txt","wb+")
+datafile=open("Ashu.txt","wb+")
 pickle.dump(data,datafile)
 datafile.flush()
 datafile.close()
